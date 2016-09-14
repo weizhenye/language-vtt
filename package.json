@@ -1,0 +1,26 @@
+{
+  "name": "language-vtt",
+  "version": "0.0.0",
+  "description": "Syntax highlighting for WebVTT files in Atom.",
+  "keywords": [
+    "WebVTT",
+    "vtt",
+    "subtitle",
+    "syntax",
+    "highlight",
+    "Atom"
+  ],
+  "engines": {
+    "atom": "*",
+    "node": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weizhenye/language-vtt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/weizhenye/language-vtt/issues"
+  },
+  "author": "Zhenye Wei",
+  "license": "MIT"
+}

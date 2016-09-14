@@ -1,0 +1,604 @@
+scopeName: 'source.vtt'
+fileTypes: ['vtt']
+firstLineMatch: '^WEBVTT(?:\\s+(.*))?$'
+name: 'WebVTT'
+patterns: [
+  {
+    include: '#file_body'
+  }
+]
+repository:
+  _cue_timings_and_settings_list:
+    match: '^(.+?\\s+-->\\s+.+?)(?:\\s+(.+))?$'
+    captures:
+      1:
+        patterns: [
+          include: '#cue_timings'
+        ]
+      2:
+        patterns: [
+          include: '#cue_settings_list'
+        ]
+  timestamp:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-timestamp'
+    name: 'meta.timestamp.vtt'
+    match: '^(?:(\\d{2,})(:))?([0-5]\\d)(:)([0-5]\\d\\.\\d{3})$'
+    captures:
+      1:
+        name: 'constant.numeric.time.hour.vtt'
+      2:
+        name: 'punctuation.separator.colon.vtt'
+      3:
+        name: 'constant.numeric.time.minute.vtt'
+      4:
+        name: 'punctuation.separator.colon.vtt'
+      5:
+        name: 'constant.numeric.time.second.vtt'
+  percentage:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-percentage'
+    name: 'constant.numeric.percentage.vtt'
+    match: '^\\d+(?:\\.\\d+)?%$'
+  file_body:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-file-body'
+    name: 'meta.file-body.vtt'
+    begin: '^(WEBVTT)(?:\\s+(.*))?$'
+    beginCaptures:
+      1:
+        name: 'entity.name.section.webvtt.vtt'
+      2:
+        name: 'comment.line.character.vtt'
+    patterns: [
+      {
+        # TODO: Not mentioned in definition of *WebVTT file body*
+        include: '#region_definition_block'
+      }
+      {
+        # TODO: style blocks shouldn't appear after the first cue block.
+        include: '#style_block'
+      }
+      {
+        include: '#comment_block'
+      }
+      {
+        include: '#cue_block'
+      }
+    ]
+  style_block:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-style-block'
+    name: 'meta.style-block.vtt'
+    begin: '^(STYLE)\\s*'
+    end: '^$'
+    beginCaptures:
+      1:
+        name: 'entity.name.section.style.vtt'
+    patterns: [
+      {
+        # TODO: `-->` is not checked when it's inside CSS string.
+        name: 'invalid.illegal.vtt'
+        match: '.*-->.*'
+      }
+      {
+        include: 'source.css'
+      }
+    ]
+  comment_block:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-comment-block'
+    name: 'meta.comment-block.vtt'
+    begin: '^(NOTE)(\\s+(?:.*)?)$'
+    end: '^$'
+    beginCaptures:
+      1:
+        name: 'entity.name.section.style.vtt'
+      2:
+        name: 'comment.line.character.vtt'
+    patterns: [
+      {
+        name: 'comment.line.character.vtt'
+        match: '.+'
+      }
+    ]
+  region_definition_block:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-region-definition-block'
+    name: 'meta.region-definition-block.vtt'
+    begin: '^(REGION)\\s*'
+    end: '^$'
+    beginCaptures:
+      1:
+        name: 'entity.name.section.region.vtt'
+    patterns: [
+      {
+        include: '#region_settings_list'
+      }
+    ]
+  region_settings_list:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-region-settings-list'
+    name: 'meta.region-settings-list.vtt'
+    patterns: [
+      {
+        include: '#region_identifier_setting'
+      }
+      {
+        include: '#region_width_setting'
+      }
+      {
+        include: '#region_lines_setting'
+      }
+      {
+        include: '#region_anchor_setting'
+      }
+      {
+        include: '#region_viewport_anchor_setting'
+      }
+      {
+        include: '#region_scroll_setting'
+      }
+    ]
+  region_identifier_setting:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-region-identifier-setting'
+    name: 'meta.region-identifier-setting.vtt'
+    match: '(id)(:)([^\\s]+)'
+    captures:
+      1:
+        name: 'support.type.region-identifier-setting.vtt'
+      2:
+        name: 'punctuation.definition.colon.vtt'
+      3:
+        patterns: [
+          {
+            name: 'invalid.illegal.vtt'
+            match: '.*-->.*'
+          }
+          {
+            name: 'string.unquoted.region-identifier-setting.vtt'
+            match: '[^\\s]+'
+          }
+        ]
+  region_width_setting:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-region-width-setting'
+    name: 'meta.region-width-setting.vtt'
+    match: '(width)(:)([^\\s]+)'
+    captures:
+      1:
+        name: 'support.type.region-width-setting.vtt'
+      2:
+        name: 'punctuation.definition.colon.vtt'
+      3:
+        patterns: [
+          {
+            include: '#percentage'
+          }
+          {
+            name: 'invalid.illegal.vtt'
+            match: '.+'
+          }
+        ]
+  region_lines_setting:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-region-lines-setting'
+    name: 'meta.region-lines-setting.vtt'
+    match: '(lines)(:)([^\\s]+)'
+    captures:
+      1:
+        name: 'support.type.region-lines-setting.vtt'
+      2:
+        name: 'punctuation.definition.colon.vtt'
+      3:
+        patterns: [
+          {
+            name: 'constant.numeric.region-lines-setting.vtt'
+            match: '\\d+'
+          }
+          {
+            name: 'invalid.illegal.vtt'
+            match: '.+'
+          }
+        ]
+  region_anchor_setting:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-region-anchor-setting'
+    name: 'meta.region-anchor-setting.vtt'
+    match: '(regionanchor)(:)([^\\s]+)'
+    captures:
+      1:
+        name: 'support.type.region-anchor-setting.vtt'
+      2:
+        name: 'punctuation.definition.colon.vtt'
+      3:
+        patterns: [
+          {
+            match: '(.+)(,)(.+)'
+            captures:
+              1:
+                patterns: [
+                  {
+                    include: '#percentage'
+                  }
+                ]
+              2:
+                name: 'punctuation.separator.comma.vtt'
+              3:
+                patterns: [
+                  {
+                    include: '#percentage'
+                  }
+                ]
+          }
+          {
+            name: 'invalid.illegal.vtt'
+            match: '.+'
+          }
+        ]
+  region_viewport_anchor_setting:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-region-viewport-anchor-setting'
+    name: 'meta.region-viewport-anchor-setting.vtt'
+    match: '(viewportanchor)(:)([^\\s]+)'
+    captures:
+      1:
+        name: 'support.type.region-viewport-anchor-setting.vtt'
+      2:
+        name: 'punctuation.definition.colon.vtt'
+      3:
+        patterns: [
+          {
+            match: '(.*)(,)(.*)'
+            captures:
+              1:
+                patterns: [
+                  {
+                    include: '#percentage'
+                  }
+                ]
+              2:
+                name: 'punctuation.separator.comma.vtt'
+              3:
+                patterns: [
+                  {
+                    include: '#percentage'
+                  }
+                ]
+          }
+          {
+            name: 'invalid.illegal.vtt'
+            match: '.+'
+          }
+        ]
+  region_scroll_setting:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-region-scroll-setting'
+    name: 'meta.region-scroll-setting.vtt'
+    match: '(scroll)(:)([^\\s]+)'
+    captures:
+      1:
+        name: 'support.type.region-scroll-setting.vtt'
+      2:
+        name: 'punctuation.definition.colon.vtt'
+      3:
+        patterns: [
+          {
+            # TODO: is `none` a vaild value?
+            name: 'support.constant.region-scroll-setting.vtt'
+            match: '^up$'
+          }
+          {
+            name: 'invalid.illegal.vtt'
+            match: '.+'
+          }
+        ]
+  cue_block:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-block'
+    name: 'meta.cue-block.vtt'
+    begin: '^.+$'
+    end: '^$'
+    beginCaptures:
+      0:
+        patterns: [
+          {
+            include: '#cue_identifier'
+          }
+          {
+            include: '#_cue_timings_and_settings_list'
+          }
+          {
+            name: 'invalid.illegal.vtt'
+            match: '.+'
+          }
+        ]
+    patterns: [
+      # TODO: _cue_timings_and_settings_list may checked twice.
+      {
+        include: '#_cue_timings_and_settings_list'
+      }
+      {
+        include: '#cue_text'
+      }
+    ]
+  cue_identifier:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-identifier'
+    name: 'variable.other.cue-identifier.vtt'
+    match: '^(?!.*-->).*$'
+  cue_timings:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-timings'
+    name: 'meta.cue-timings.vtt'
+    match: '^(.+?)\\s+(-->)\\s+(.+?)$'
+    captures:
+      1:
+        patterns: [
+          {
+            include: '#timestamp'
+          }
+          {
+            name: 'invalid.illegal.vtt'
+            match: '.+'
+          }
+        ]
+      2:
+        name: 'punctuation.separator.vtt' # TODO
+      3:
+        patterns: [
+          {
+            include: '#timestamp'
+          }
+          {
+            name: 'invalid.illegal.vtt'
+            match: '.+'
+          }
+        ]
+  cue_settings_list:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-settings-list'
+    name: 'meta.cue-settings-list.vtt'
+    patterns: [
+      {
+        include: '#vertical_text_cue_setting'
+      }
+      {
+        include: '#line_cue_setting'
+      }
+      {
+        include: '#position_cue_setting'
+      }
+      {
+        include: '#size_cue_setting'
+      }
+      {
+        include: '#alignment_cue_setting'
+      }
+      {
+        include: '#region_cue_setting'
+      }
+    ]
+  vertical_text_cue_setting:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-vertical-text-cue-setting'
+    name: 'meta.vertical-text-cue-setting.vtt'
+    match: '(vertical)(:)([^\\s]+)'
+    captures:
+      1:
+        name: 'support.type.vertical-text-cue-setting.vtt'
+      2:
+        name: 'punctuation.definition.colon.vtt'
+      3:
+        patterns: [
+          {
+            name: 'support.constant.vertical-text-cue-setting.vtt'
+            match: '^(?:rl|lr)$'
+          }
+          {
+            name: 'invalid.illegal.vtt'
+            match: '.+'
+          }
+        ]
+  line_cue_setting:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-line-cue-setting'
+    name: 'meta.line-cue-setting.vtt'
+    match: '(line)(:)([^\\s]+)'
+    captures:
+      1:
+        name: 'support.type.line-cue-setting.vtt'
+      2:
+        name: 'punctuation.definition.colon.vtt'
+      3:
+        patterns: [
+          {
+            match: '^(.+?)(?:(,)(.+))?$'
+            captures:
+              1:
+                patterns: [
+                  {
+                    name: 'constant.numeric.line-cue-setting.vtt'
+                    match: '^-?\\d+$'
+                  }
+                  {
+                    include: '#percentage'
+                  }
+                  {
+                    name: 'invalid.illegal.vtt'
+                    match: '.+'
+                  }
+                ]
+              2:
+                name: 'punctuation.separator.comma.vtt'
+              3:
+                patterns: [
+                  {
+                    name: 'support.constant.line-cue-setting.vtt'
+                    match: '^(?:start|center|end)$'
+                  }
+                  {
+                    name: 'invalid.illegal.vtt'
+                    match: '.+'
+                  }
+                ]
+          }
+        ]
+  position_cue_setting:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-position-cue-setting'
+    name: 'meta.position-cue-setting.vtt'
+    match: '(position)(:)([^\\s]+)'
+    captures:
+      1:
+        name: 'support.type.position-cue-setting.vtt'
+      2:
+        name: 'punctuation.definition.colon.vtt'
+      3:
+        patterns: [
+          {
+            match: '^(.+?)(?:(,)(.+))?$'
+            captures:
+              1:
+                patterns: [
+                  {
+                    include: '#percentage'
+                  }
+                  {
+                    name: 'invalid.illegal.vtt'
+                    match: '.+'
+                  }
+                ]
+              2:
+                name: 'punctuation.separator.comma.vtt'
+              3:
+                patterns: [
+                  {
+                    name: 'support.constant.position-cue-setting.vtt'
+                    match: '^(?:line-left|center|line-right)$'
+                  }
+                  {
+                    name: 'invalid.illegal.vtt'
+                    match: '.+'
+                  }
+                ]
+          }
+        ]
+  size_cue_setting:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-size-cue-setting'
+    name: 'meta.size-cue-setting.vtt'
+    match: '(size)(:)([^\\s]+)'
+    captures:
+      1:
+        name: 'support.type.size-cue-setting.vtt'
+      2:
+        name: 'punctuation.definition.colon.vtt'
+      3:
+        patterns: [
+          {
+            include: '#percentage'
+          }
+          {
+            name: 'invalid.illegal.vtt'
+            match: '.+'
+          }
+        ]
+  alignment_cue_setting:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-alignment-cue-setting'
+    name: 'meta.alignment-cue-setting.vtt'
+    match: '(align)(:)([^\\s]+)'
+    captures:
+      1:
+        name: 'support.type.alignment-cue-setting.vtt'
+      2:
+        name: 'punctuation.definition.colon.vtt'
+      3:
+        patterns: [
+          {
+            name: 'support.constant.alignment-cue-setting.vtt'
+            match: '^(?:start|center|end|left|right)$'
+          }
+          {
+            name: 'invalid.illegal.vtt'
+            match: '.+'
+          }
+        ]
+  region_cue_setting:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-region-cue-setting'
+    name: 'meta.region-cue-setting.vtt'
+    match: '(region)(:)([^\\s]+)'
+    captures:
+      1:
+        name: 'support.type.region-cue-setting.vtt'
+      2:
+        name: 'punctuation.definition.colon.vtt'
+      3:
+        patterns: [
+          {
+            name: 'invalid.illegal.vtt'
+            match: '.*-->.*'
+          }
+          {
+            name: 'string.unquoted.region-cue-setting.vtt'
+            match: '[^\\s]+'
+          }
+        ]
+  cue_text:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-text'
+    name: 'meta.cue-text.vtt'
+    patterns: [
+      {
+        # TODO: cue components now just be parsed by HTML syntax.
+        include: '#cue_components'
+      }
+      {
+        # TODO: `-->` is not checked.
+        include: 'text.html.basic'
+      }
+    ]
+  cue_components:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-components'
+    name: 'meta.cue-components.vtt'
+    patterns: [
+      {
+        include: '#cue_class_span'
+      }
+      {
+        include: '#cue_italics_span'
+      }
+      {
+        include: '#cue_bold_span'
+      }
+      {
+        include: '#cue_underline_span'
+      }
+      {
+        include: '#cue_ruby_span'
+      }
+      {
+        include: '#cue_voice_span'
+      }
+      {
+        include: '#cue_language_span'
+      }
+      {
+        include: '#cue_timestamp'
+      }
+      {
+        include: '#cue_text_span'
+      }
+      {
+        include: '#html_character_reference'
+      }
+    ]
+  cue_class_span:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-class-span'
+    name: 'meta.cue-class-span.vtt'
+  cue_italics_span:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-italics-span'
+    name: 'meta.cue-italics-span.vtt'
+  cue_bold_span:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-bold-span'
+    name: 'meta.cue-bold-span.vtt'
+  cue_underline_span:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-underline-span'
+    name: 'meta.cue-underline-span.vtt'
+  cue_ruby_span:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-ruby-span'
+    name: 'meta.cue-ruby-span.vtt'
+  cue_voice_span:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-voice-span'
+    name: 'meta.cue-voice-span.vtt'
+  cue_language_span:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-language-span'
+    name: 'meta.cue-language-span.vtt'
+  cue_timestamp:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-timestamp'
+    name: 'meta.cue-timestamp.vtt'
+  cue_text_span:
+    comment: 'https://w3c.github.io/webvtt/#webvtt-cue-text-span'
+    name: 'meta.cue-text-span.vtt'
+  html_character_reference:
+    comment: 'https://html.spec.whatwg.org/multipage/syntax.html#syntax-charref'
+    name: 'meta.html-character-reference.vtt'
