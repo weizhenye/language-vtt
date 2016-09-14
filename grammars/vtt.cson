@@ -36,8 +36,11 @@ repository:
         name: 'constant.numeric.time.second.vtt'
   percentage:
     comment: 'https://w3c.github.io/webvtt/#webvtt-percentage'
-    name: 'constant.numeric.percentage.vtt'
+    name: 'meta.percentage.vtt'
     match: '^\\d+(?:\\.\\d+)?%$'
+    captures:
+      0:
+        name: 'constant.numeric.percentage.vtt'
   file_body:
     comment: 'https://w3c.github.io/webvtt/#webvtt-file-body'
     name: 'meta.file-body.vtt'
@@ -84,11 +87,11 @@ repository:
   comment_block:
     comment: 'https://w3c.github.io/webvtt/#webvtt-comment-block'
     name: 'meta.comment-block.vtt'
-    begin: '^(NOTE)(\\s+(?:.*)?)$'
+    begin: '^(NOTE)(?:\\s(.*))?$'
     end: '^$'
     beginCaptures:
       1:
-        name: 'entity.name.section.style.vtt'
+        name: 'entity.name.section.comment.vtt'
       2:
         name: 'comment.line.character.vtt'
     patterns: [
@@ -311,8 +314,11 @@ repository:
     ]
   cue_identifier:
     comment: 'https://w3c.github.io/webvtt/#webvtt-cue-identifier'
-    name: 'variable.other.cue-identifier.vtt'
+    name: 'meta.cue-identifier.vtt'
     match: '^(?!.*-->).*$'
+    captures:
+      0:
+        name: 'variable.other.cue-identifier.vtt'
   cue_timings:
     comment: 'https://w3c.github.io/webvtt/#webvtt-cue-timings'
     name: 'meta.cue-timings.vtt'
@@ -329,7 +335,7 @@ repository:
           }
         ]
       2:
-        name: 'punctuation.separator.vtt' # TODO
+        name: 'punctuation.separator.vtt'
       3:
         patterns: [
           {
