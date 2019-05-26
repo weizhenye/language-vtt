@@ -1,6 +1,6 @@
 {
   "name": "language-vtt",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Syntax highlighting for WebVTT files in Atom.",
   "keywords": [
     "WebVTT",
